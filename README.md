@@ -35,6 +35,7 @@ Give credentials to docker for it to push to ECR.
 Since ECS create 2 CloudFormation stack, delete the stack after finish using and check if unwanted service are running:
 - ECS Fargate
     - Task running?
+    - Service set desired count = 0
 - Load balancer
     - Charged even on Idle
 - NAT gateway
