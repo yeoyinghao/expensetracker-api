@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(schema="default", name="expense")
+@Table(schema="public", name="expense")
 public class Expense {
 
     @Id
@@ -21,7 +21,7 @@ public class Expense {
     @Column(name="name", length=50, nullable=false, unique=false)
     private String name;
 
-    @Column(name="amount", length=50, nullable=false, unique=false)
+    @Column(name="amount", nullable=false, unique=false)
     private int amount;
 
     @Enumerated(EnumType.STRING)
@@ -33,5 +33,21 @@ public class Expense {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ExpenseType getExpenseType() {
+        return expenseType;
+    }
+
+    public void setExpenseType(ExpenseType expenseType) {
+        this.expenseType = expenseType;
     }
 }

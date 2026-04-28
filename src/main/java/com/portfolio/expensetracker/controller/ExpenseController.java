@@ -31,6 +31,7 @@ public class ExpenseController {
 
     @PostMapping("/create")
     public Expense create(@RequestBody Expense expense){
+        System.out.println(expense);
         return service.save(expense);
     }
 
