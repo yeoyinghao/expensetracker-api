@@ -25,5 +25,13 @@ public class Expense {
     private int amount;
 
     @Enumerated(EnumType.STRING)
-    private ExpenseType type;
+    private ExpenseType expenseType;
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
 }
