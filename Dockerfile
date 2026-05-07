@@ -11,7 +11,8 @@ COPY build.gradle settings.gradle ./
 RUN chmod +x gradlew
 
 # Download dependencies (cache layer)
-RUN ./gradlew build -x test --no-daemon || true
+# RUN ./gradlew build -x test --no-daemon || true
+RUN ./gradlew dependencies --no-daemon
 
 # Copy source
 COPY src src
