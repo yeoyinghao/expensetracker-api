@@ -36,9 +36,8 @@ env:
   ECR_REPOSITORY: portfolio/java-api-repo     # set this to your Amazon ECR repository name
   ECS_SERVICE: java-api-fargate-service-2     # set this to your Amazon ECS service name
   ECS_CLUSTER: eptracker-cluster              # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: java-api-fargate       # set this to the path to your Amazon ECS task definition
+  ECS_TASK_DEFINITION: task-definition.json   # set this to the path to your Amazon ECS task definition
                                               # file, e.g. .aws/task-definition.json
-  ECS_TASK_DEFINITION_ARN: arn:aws:ecs:ap-northeast-1:465733921220:task-definition/java-api-fargate:9
   ECS_TASK_DEFINITION_FAMILY_NAME: java-api-fargate
   CONTAINER_NAME: java-api                    # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
@@ -85,9 +84,7 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        ## task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        task-definition-arn:  ${{ env.ECS_TASK_DEFINITION_ARN }}
-        task-definition-family: ${{ env.ECS_TASK_DEFINITION_FAMILY_NAME }}
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
         container-name: ${{ env.CONTAINER_NAME }}
         image: ${{ steps.build-image.outputs.image }}
 
