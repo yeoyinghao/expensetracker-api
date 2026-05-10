@@ -29,6 +29,13 @@ jobs:
         aws-region: ap-northeast-1
         role-to-assume: arn:aws:iam::465733921220:role/githubTerraformRole
 
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+    
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+      
     - name: Terraform Destroy
       working-directory: ./terraform
       run: terraform destroy -auto-approve
