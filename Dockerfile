@@ -12,7 +12,7 @@ RUN chmod +x gradlew
 
 # Download dependencies (cache layer)
 # RUN ./gradlew build -x test --no-daemon || true
-RUN ./gradlew dependencies --no-daemon
+RUN ./gradlew dependencies --no-daemon -q
 
 # Copy source
 COPY src src

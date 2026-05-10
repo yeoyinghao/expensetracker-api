@@ -8,6 +8,11 @@ build/
 .env
 ### WSL
 *.Identifier
+### Terraform
+terraform/.terraform/
+# Terraform state files
+*.tfstate
+*.tfstate.*
 
 ### STS ###
 .apt_generated
