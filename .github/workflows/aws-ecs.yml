@@ -27,7 +27,9 @@
 name: Deploy to Amazon ECS
 
 on:
-  push:
+  ##push:
+  ##  branches: [ "main" ]
+  pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
