@@ -48,8 +48,8 @@ resource "aws_route_table_association" "public_c" {
   route_table_id = aws_route_table.public.id
 }
 
-# Security Group
-resource "aws_security_group" "app_inbound" {
+# ECS Security Group
+resource "aws_security_group" "web_tier" {
   name        = "app-access-sg"
   description = "Allow HTTP/HTTPS traffic access application"
   vpc_id      = aws_vpc.main.id
@@ -60,4 +60,38 @@ resource "aws_security_group" "app_inbound" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow HTTP from anywhere"
   }
+}
+
+# RDS Security Group
+resource "aws_security_group" "db_tier" {
+  name        = "rds-sg"
+  description = "Allow application access RDS"
+  vpc_id      = aws_vpc.main.id
+  ingress {
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_tier.id]
+    description     = "Allow PostgreSQL only from web tier"
+  }
+}
+
+# HTTPS outbound for AWS APIs: Secrets Manager, ECR, CloudWatch Logs, etc.
+resource "aws_security_group_rule" "allow_https_outbound" {
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.web_tier.id
+  description       = "Allow HTTPS outbound"
+}
+
+# PostgreSQL outbound to RDS
+resource "aws_vpc_security_group_egress_rule" "allow_postgres_outbound" {
+  security_group_id            = aws_security_group.web_tier.id
+  referenced_security_group_id = aws_security_group.db_tier.id
+  ip_protocol                  = "tcp"
+  from_port                    = 5432
+  to_port                      = 5432
 }
