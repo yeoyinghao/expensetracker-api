@@ -1,11 +1,12 @@
 
+
 API for tracking expense.
 
 ## Project Overview
-
 Spring Boot API that manages expenses. Run on Amazon ECS, Infrastructure managed by Terraform, CI/CD pipeline trigger on push with Github Actions.
 
 ## Architecture Diagram
+<img width="1047" height="722" alt="aws_architecture_diagram" src="https://github.com/user-attachments/assets/a761a41a-75c1-438e-9a32-cd2354d053cc" />
 
 ## Tech Stack
 
@@ -38,6 +39,7 @@ Spring Boot API that manages expenses. Run on Amazon ECS, Infrastructure managed
 6. Update ECS task definition and service to point to latest task definition
 
 ### Troubleshooting
+
 1. Docker run without port mapping
 It is required to specify port when running container or it would not be accessible on internet.
 `docker run -p <host_port>:<container_port>`
@@ -68,4 +70,5 @@ Since ECS create 2 CloudFormation stack, delete the stack after finish using and
 - NAT gateway
 
 ## Next steps
+
 Terraform define ECR and ECS structure, configure security group and IAM role
