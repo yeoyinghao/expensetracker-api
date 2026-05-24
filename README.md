@@ -1,16 +1,43 @@
 
 API for tracking expense.
 
-### Steps to create
-1. Create spring boot API
-2. Add endpoint `GET` `/create`
-3. Gradle build and test run on localhost:8080/create
-4. Dockerize application
-5. Push to ECR
-6. Create task, service, cluster on ECS. Run task on Fargate. Configure public network. Test on public IP address to access the endpoint.
+## Project Overview
 
+Spring Boot API that manages expenses. Run on Amazon ECS, Infrastructure managed by Terraform, CI/CD pipeline trigger on push with Github Actions.
 
-### Key takeways
+## Architecture Diagram
+
+## Tech Stack
+
+- Java 17, Gradle, Spring Boot
+- Docker
+- Amazon ECS Fargate, ECR, VPC, IAM
+- Github Actions
+- Terraform
+
+## AWS Infrastructure
+
+1. Users access endpoint of public IP address of the application.
+2. Request go to the ECS Fargate Task of that IP address.
+3. Task container talks with RDS that resides in private subnet through port 5432.
+4. Task uses DB credentials from Secrets Manager to authenticate RDS.
+5. Task application logs are output to CloudWatch.
+6. 
+
+## Improved AWS Infrastructure
+
+1. 
+
+## CI/CD flow
+
+1. Commit code and push to main branch
+2. Trigger aws-ecs.yml action
+3. Docker build and test
+4. Authorize with AWS
+5. Push image to ECR private repo
+6. Update ECS task definition and service to point to latest task definition
+
+### Troubleshooting
 1. Docker run without port mapping
 It is required to specify port when running container or it would not be accessible on internet.
 `docker run -p <host_port>:<container_port>`
@@ -40,3 +67,5 @@ Since ECS create 2 CloudFormation stack, delete the stack after finish using and
     - Charged even on Idle
 - NAT gateway
 
+## Next steps
+Terraform define ECR and ECS structure, configure security group and IAM role
