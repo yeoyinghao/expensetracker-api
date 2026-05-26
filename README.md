@@ -38,7 +38,7 @@ Spring Boot API that manages expenses. Run on Amazon ECS, Infrastructure managed
 5. Push image to ECR private repo
 6. Update ECS task definition and service to point to latest task definition
 
-### Troubleshooting
+## Troubleshooting
 
 1. Docker run without port mapping
 It is required to specify port when running container or it would not be accessible on internet.
