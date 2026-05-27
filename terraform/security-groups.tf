@@ -37,19 +37,19 @@ resource "aws_vpc_security_group_egress_rule" "allow_https_outbound" {
   description       = "Allow HTTPS outbound"
 }
 
-# RDS inbound from ECS
-resource "aws_vpc_security_group_ingress_rule" "allow_postgres_inbound" {
-  security_group_id            = aws_security_group.db_tier.id
-  referenced_security_group_id = aws_security_group.web_tier.id
+# ECS outbound to RDS
+resource "aws_vpc_security_group_egress_rule" "ecs_to_rds" {
+  security_group_id            = aws_security_group.web_tier.id
+  referenced_security_group_id = aws_security_group.db_tier.id
   ip_protocol                  = "tcp"
   from_port                    = 5432
   to_port                      = 5432
 }
 
-# RDS outbound from ECS
-resource "aws_vpc_security_group_egress_rule" "ecs_to_rds" {
-  security_group_id            = aws_security_group.web_tier.id
-  referenced_security_group_id = aws_security_group.db_tier.id
+# RDS inbound from ECS
+resource "aws_vpc_security_group_ingress_rule" "allow_postgres_inbound" {
+  security_group_id            = aws_security_group.db_tier.id
+  referenced_security_group_id = aws_security_group.web_tier.id
   ip_protocol                  = "tcp"
   from_port                    = 5432
   to_port                      = 5432
