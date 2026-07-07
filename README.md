@@ -24,7 +24,6 @@ Spring Boot API that manages expenses. Run on Amazon ECS, Infrastructure managed
 4. Tasks retrieve database credentials from AWS Secrets Manager and send application logs to Amazon CloudWatch.
 5. Private subnets use NAT Gateway for outbound access to AWS services and the internet.
 
-
 ## CI/CD flow
 
 1. Commit code and push to dev branch
@@ -35,7 +34,7 @@ Spring Boot API that manages expenses. Run on Amazon ECS, Infrastructure managed
 6. Push image to ECR private repo
 7. Update ECS task definition and service to point to latest task definition
 
-## Troubleshooting
+## Learning Point
 
 1. Docker run without port mapping
 It is required to specify port when running container or it would not be accessible on internet.
@@ -68,5 +67,5 @@ Since ECS create 2 CloudFormation stack, delete the stack after finish using and
 
 ## Next steps
 
-Terraform define ECR and ECS structure, configure security group and IAM role
+Terraform define ECS structure, configure security group and IAM role
 Use VPC endpoint instead of NAT Gateway for ECS task - AWS service communication
