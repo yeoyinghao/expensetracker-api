@@ -1,7 +1,7 @@
 # ECS Security Group
 resource "aws_security_group" "web_tier" {
   name        = "app-access-sg"
-  description = "Allow HTTP/HTTPS traffic access application"
+  description = "Allow ALB access to ECS tasks"
   vpc_id      = aws_vpc.main.id
 }
 
@@ -27,7 +27,7 @@ resource "aws_vpc_security_group_ingress_rule" "ecs_inbound" {
   to_port                      = 8080
 }
 
-# HTTPS outbound for AWS APIs: Secrets Manager, ECR, CloudWatch Logs, etc.
+# HTTPS outbound for AWS APIs: ECR, CloudWatch Logs, and future VPC endpoints.
 resource "aws_vpc_security_group_egress_rule" "allow_https_outbound" {
   security_group_id = aws_security_group.web_tier.id
   cidr_ipv4         = "0.0.0.0/0"
