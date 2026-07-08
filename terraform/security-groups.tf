@@ -27,7 +27,7 @@ resource "aws_vpc_security_group_ingress_rule" "ecs_inbound" {
   to_port                      = 8080
 }
 
-# HTTPS outbound for AWS APIs: ECR, CloudWatch Logs, and future VPC endpoints.
+# ECS HTTPS outbound for AWS APIs: ECR, CloudWatch Logs, and future VPC endpoints.
 resource "aws_vpc_security_group_egress_rule" "allow_https_outbound" {
   security_group_id = aws_security_group.web_tier.id
   cidr_ipv4         = "0.0.0.0/0"

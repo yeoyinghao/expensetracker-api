@@ -3,6 +3,12 @@ resource "aws_cloudwatch_log_group" "app" {
   retention_in_days = 7
 }
 
+variable "ecs_task_execution_role_name" {
+  description = "Existing IAM role name used by ECS to pull ECR images and write CloudWatch logs. Fetch from Secrets Manager"
+  type        = string
+  default     = "ecsTaskExecutionRole"
+}
+
 data "aws_iam_policy_document" "ecs_task_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -14,14 +20,8 @@ data "aws_iam_policy_document" "ecs_task_assume_role" {
   }
 }
 
-resource "aws_iam_role" "ecs_task_execution" {
-  name               = "etracker-ecs-task-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
-  role       = aws_iam_role.ecs_task_execution.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+data "aws_iam_role" "ecs_task_execution" {
+  name = var.ecs_task_execution_role_name
 }
 
 resource "aws_iam_role" "ecs_task" {
@@ -35,7 +35,7 @@ resource "aws_ecs_task_definition" "app" {
   network_mode             = "awsvpc"
   cpu                      = "512"
   memory                   = "1024"
-  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+  execution_role_arn       = data.aws_iam_role.ecs_task_execution.arn
   task_role_arn            = aws_iam_role.ecs_task.arn
 
   container_definitions = jsonencode([
@@ -111,7 +111,6 @@ resource "aws_ecs_service" "app" {
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.ecs_task_execution,
     aws_lb_listener.http
   ]
 }
