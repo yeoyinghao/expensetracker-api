@@ -3,8 +3,10 @@ locals {
   tag_prefix_list = [local.image_tag]
 }
 
+# enabled force delete to clean up image on terraform destroy before being able to destroy ECR
 resource "aws_ecr_repository" "app" {
   name = "expense-tracker-api-repo"
+  force_delete = true
 }
 
 resource "aws_ecr_lifecycle_policy" "app" {
