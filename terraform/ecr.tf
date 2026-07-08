@@ -5,7 +5,7 @@ locals {
 
 # enabled force delete to clean up image on terraform destroy before being able to destroy ECR
 resource "aws_ecr_repository" "app" {
-  name = "expense-tracker-api-repo"
+  name         = "expense-tracker-api-repo"
   force_delete = true
 }
 
