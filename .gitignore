@@ -9,7 +9,7 @@ build/
 ### WSL
 *.Identifier
 ### Terraform
-terraform/.terraform/
+*.terraform/
 # Terraform state files
 *.tfstate
 *.tfstate.*

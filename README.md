@@ -6,7 +6,7 @@ API for tracking expense.
 Spring Boot API that manages expenses. Run on Amazon ECS, Infrastructure managed by Terraform, CI/CD pipeline trigger on push with Github Actions.
 
 ## Architecture Diagram
-<img width="1047" height="722" alt="aws_architecture_diagram" src="https://github.com/user-attachments/assets/a761a41a-75c1-438e-9a32-cd2354d053cc" />
+![aws architecture diagram](attachment/aws%20architecture%20diagram.drawio.png)
 
 ## Tech Stack
 
@@ -18,27 +18,23 @@ Spring Boot API that manages expenses. Run on Amazon ECS, Infrastructure managed
 
 ## AWS Infrastructure
 
-1. Users access endpoint of public IP address of the application.
-2. Request go to the ECS Fargate Task of that IP address.
-3. Task container talks with RDS that resides in private subnet through port 5432.
-4. Task uses DB credentials from Secrets Manager to authenticate RDS.
-5. Task application logs are output to CloudWatch.
-6. 
-
-## Improved AWS Infrastructure
-
-1. 
+1. Users access application through ALB with public IP address.
+2. ALB forwards HTTP/HTTPS traffic to ECS Fargate tasks running in private subnets.
+3. The ECS tasks connect to an Amazon RDS PostgreSQL database deployed in private subnets through port 5432.
+4. Tasks retrieve database credentials from AWS Secrets Manager and send application logs to Amazon CloudWatch.
+5. Private subnets use NAT Gateway for outbound access to AWS services and the internet.
 
 ## CI/CD flow
 
-1. Commit code and push to main branch
-2. Trigger aws-ecs.yml action
-3. Docker build and test
-4. Authorize with AWS
-5. Push image to ECR private repo
-6. Update ECS task definition and service to point to latest task definition
+1. Commit code and push to dev branch
+2. Create pull request and merge with main branch
+3. Trigger aws-ecs.yml action
+4. Docker build and test
+5. Authorize with AWS
+6. Push image to ECR private repo
+7. Update ECS task definition and service to point to latest task definition
 
-### Troubleshooting
+## Learning Point
 
 1. Docker run without port mapping
 It is required to specify port when running container or it would not be accessible on internet.
@@ -71,4 +67,5 @@ Since ECS create 2 CloudFormation stack, delete the stack after finish using and
 
 ## Next steps
 
-Terraform define ECR and ECS structure, configure security group and IAM role
+Terraform define ECS structure, configure security group and IAM role
+Use VPC endpoint instead of NAT Gateway for ECS task - AWS service communication

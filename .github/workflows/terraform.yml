@@ -51,6 +51,9 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+env:
+  TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+
 permissions:
   contents: read
   id-token: write
@@ -90,7 +93,7 @@ jobs:
     - name: Terraform Format
       working-directory: ./terraform
       run: terraform fmt -check
-
+      
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./terraform
