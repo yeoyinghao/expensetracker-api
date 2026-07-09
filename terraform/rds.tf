@@ -2,11 +2,6 @@ variable "db_password" {
   description = "RDS master password. Set with TF_VAR_db_password, preferably loaded from an ignored .env file."
   type        = string
   sensitive   = true
-
-  validation {
-    condition     = length(var.db_password) >= 8
-    error_message = "db_password must be at least 8 characters."
-  }
 }
 
 variable "db_name" {
