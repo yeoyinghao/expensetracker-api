@@ -52,7 +52,7 @@ on:
   workflow_dispatch:
 
 env:
-  TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+  TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
 
 permissions:
   contents: read
@@ -93,18 +93,10 @@ jobs:
     - name: Terraform Format
       working-directory: ./terraform
       run: terraform fmt -check
-
-    - name: Check env
-      env:
-        TF_VAR_db_password: ${{ secrets.TF_VAR_db_password }} 
-      run: |
-        echo "length=${#TF_VAR_db_password}"
       
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./terraform
-      env:
-        TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
       run: terraform plan -input=false
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
@@ -112,6 +104,4 @@ jobs:
     - name: Terraform Apply
       working-directory: ./terraform
       if: github.ref_name == 'main' && github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-      env:
-        TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
       run: terraform apply -auto-approve -input=false
