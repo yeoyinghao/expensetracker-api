@@ -28,10 +28,10 @@ Spring Boot API that manages expenses. Run on Amazon ECS, Infrastructure managed
 
 1. Commit code and push to dev branch
 2. Create pull request and merge with main branch
-3. Trigger aws-ecs.yml action
+3. Review Terraform plan
 4. Docker build and test
 5. Authorize with AWS
-6. Push image to ECR private repo
+6. Push image tagged with commit SHA to ECR private repo
 7. Update ECS task definition and service to point to latest task definition
 
 ## Learning Point
@@ -69,3 +69,4 @@ Since ECS create 2 CloudFormation stack, delete the stack after finish using and
 
 Terraform define ECS structure, configure security group and IAM role
 Use VPC endpoint instead of NAT Gateway for ECS task - AWS service communication
+Make Github Actions manage ECS service and deployment adn separate it from Terraform

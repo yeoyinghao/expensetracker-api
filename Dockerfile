@@ -18,7 +18,7 @@ RUN ./gradlew dependencies --no-daemon -q
 COPY src src
 
 # Build
-RUN ./gradlew clean build -x test --no-daemon
+RUN ./gradlew clean build -x test --no-daemon -q
 
 # Stage 2: Run the application with a lightweight JRE  
 FROM eclipse-temurin:17-jre-alpine
