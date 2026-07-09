@@ -91,7 +91,7 @@ resource "aws_ecs_service" "app" {
   name            = "etracker-api"
   cluster         = aws_ecs_cluster.app.id
   task_definition = aws_ecs_task_definition.app.arn
-  desired_count   = 0 # do not create task on first deploy as image is not built yet, change to 1 after deploy cicd works
+  desired_count   = 1 # do not create task on first deploy as image is not built yet, change to 1 after deploy cicd works
   launch_type     = "FARGATE"
 
   network_configuration {
