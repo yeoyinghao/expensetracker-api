@@ -29,7 +29,10 @@ resource "aws_iam_role" "ecs_task" {
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
 }
 
-resource "aws_ecs_task_definition" "app" {
+# Terraform registers the initial task definition so the ECS service can be
+# created in a single apply. Subsequent revisions and deployments are managed
+# by GitHub Actions. The service ignores task_definition drift for that reason.
+resource "aws_ecs_task_definition" "bootstrap" {
   family                   = "etracker-api"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
@@ -90,8 +93,8 @@ resource "aws_ecs_task_definition" "app" {
 resource "aws_ecs_service" "app" {
   name            = "etracker-api"
   cluster         = aws_ecs_cluster.app.id
-  task_definition = aws_ecs_task_definition.app.arn
-  desired_count   = 1 # do not create task on first deploy as image is not built yet, change to 1 after deploy cicd works
+  task_definition = aws_ecs_task_definition.bootstrap.arn
+  desired_count   = 1 
   launch_type     = "FARGATE"
 
   network_configuration {

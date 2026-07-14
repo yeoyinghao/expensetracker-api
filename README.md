@@ -7,7 +7,6 @@ API for tracking expense.
 </div>
 
 
-
 ## Project Overview
 
 Spring Boot API that manages expenses. Run on Amazon ECS, Infrastructure managed by Terraform, CI/CD pipeline trigger on push with Github Actions.
@@ -50,5 +49,6 @@ curl -X DELETE http://{ALB endpoint}/expense/{ID}
 
 ## Next steps
 
+- Add CloudWatch Alarms and Dashboard
+- Create SNS Topic and Notification to external app
 - Use VPC endpoint instead of NAT Gateway for ECS task - AWS service communication
-- Make Github Actions manage ECS service and deployment and separate it from Terraform
