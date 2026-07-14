@@ -10,7 +10,6 @@ on:
     branches: [ "main" ]
     paths:
       - 'src/**'
-      - 'pom.xml'
       - 'Dockerfile'
       - '.github/workflows/aws-ecs.yml'
   workflow_dispatch:
@@ -41,7 +40,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ env.AWS_REGION }}
-        role-to-assume: arn:aws:iam::465733921220:role/gthubActionECSUpdateRole
+        role-to-assume: ${{ vars.ECS_DEPLOY_ROLE_ARN }}
         role-session-name: ConfigAWSCredsSession
 
     - name: Login to Amazon ECR
