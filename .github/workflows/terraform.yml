@@ -47,8 +47,16 @@ name: 'Terraform'
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '.github/workflows/terraform.yml'
   pull_request:
     branches: [ "main" ]
+    paths:
+      - '**/*.tf'
+      - '**/*.tfvars'
+      - '.github/workflows/terraform.yml'
   workflow_dispatch:
 
 env:
