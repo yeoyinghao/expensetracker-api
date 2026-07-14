@@ -6,7 +6,7 @@
 4. Tasks retrieve database credentials from AWS Secrets Manager and send application logs to Amazon CloudWatch.
 5. Private subnets use NAT Gateway for outbound access to AWS services and the internet.
 
-![aws architecture diagram](attachment/aws%20architecture%20diagram.drawio.png)
+![aws architecture diagram](../attachment/aws%20architecture%20diagram.drawio.png)
 
 ## CI/CD flow
 
