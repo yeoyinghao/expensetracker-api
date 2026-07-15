@@ -4,15 +4,21 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-### creds
+
+### creds ###
 .env
-### WSL
+
+### WSL ###
 *.Identifier
-### Terraform
+
+### Terraform ###
 *.terraform/
 # Terraform state files
 *.tfstate
 *.tfstate.*
+
+### AWS Lambda ###
+/lambda/layer/
 
 ### STS ###
 .apt_generated
