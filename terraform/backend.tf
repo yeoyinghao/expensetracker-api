@@ -7,6 +7,7 @@ terraform {
   }
 
   backend "s3" {
+    bucket       = "etracker-tf-state-20260716"
     key          = "dev/terraform.tfstate"
     region       = "ap-northeast-1"
     use_lockfile = true

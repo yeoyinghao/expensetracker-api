@@ -1,7 +1,5 @@
-data "aws_caller_identity" "current" {}
-
 resource "aws_s3_bucket" "app" {
-  bucket = "etracker-tf-state-${data.aws_caller_identity.current.account_id}"
+  bucket = "etracker-tf-state-20260716"
 
   tags = {
     Environment = "Dev"
