@@ -7,6 +7,12 @@ resource "aws_cloudwatch_metric_alarm" "cpu" {
   period              = 120
   statistic           = "Average"
   threshold           = 80
-  alarm_description   = "This metric monitors ec2 cpu utilization"
-  alarm_actions       = [aws_sns_topic.cloudwatch_alarm.arn]
+
+  alarm_description = "ECS service CPU utilization >= 80%"
+  alarm_actions     = [aws_sns_topic.cloudwatch_alarm.arn]
+
+  dimensions = {
+    ClusterName = aws_ecs_cluster.app.name
+    ServiceName = aws_ecs_service.app.name
+  }
 }
