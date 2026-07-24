@@ -18,7 +18,7 @@ build/
 *.tfstate.*
 
 ### AWS Lambda ###
-/lambda/layer/
+/lambda/*.zip
 
 ### STS ###
 .apt_generated

@@ -1,5 +1,5 @@
 resource "aws_lb" "app" {
-  name               = "etracker-alb-tf"
+  name               = "${local.application_name}-alb-tf"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
@@ -18,7 +18,7 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_lb_target_group" "app" {
-  name        = "etracker-tg"
+  name        = "${local.application_name}-tg"
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id

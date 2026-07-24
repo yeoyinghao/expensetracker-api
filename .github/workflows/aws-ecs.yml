@@ -1,7 +1,5 @@
-# Builds an image, pushes it to ECR, renders a new revision from the
-# Terraform-created ECS task definition family, and deploys it to the service.
-# Required GitHub environment variables: DB_HOST, DB_PORT, DB_NAME, DB_USERNAME.
-# Required GitHub environment secret: DB_PASSWORD.
+# Builds an image, pushes it to ECR, copies the task definition currently used
+# by the ECS service, changes only the image, and deploys the new revision.
 
 name: Deploy to Amazon ECS
 
@@ -12,6 +10,9 @@ on:
       - 'src/**'
       - 'Dockerfile'
       - '.github/workflows/aws-ecs.yml'
+      - '*.gradle'
+      - 'gradle/**'
+      - 'gradlew'
   workflow_dispatch:
 
 env:
@@ -19,8 +20,8 @@ env:
   ECR_REPOSITORY: expense-tracker-api-repo
   ECS_SERVICE: etracker-api
   ECS_CLUSTER: etracker-cluster
-  ECS_TASK_DEFINITION_FAMILY_NAME: etracker-api
   CONTAINER_NAME: etracker-api
+  IMAGE_TAG_PREFIX: dev
 
 permissions:
   contents: read
@@ -51,7 +52,7 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: dev-${{ github.sha }}
+        IMAGE_TAG: ${{ env.IMAGE_TAG_PREFIX }}-${{ github.sha }}
       run: |
         # Build a docker container and
         # push it to ECR so that it can
@@ -60,19 +61,40 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
+    # Start from the revision actually deployed by the service, rather than the
+    # latest family revision. This preserves all ECS environment variables and
+    # Secrets Manager/SSM references, including changes made outside this repo.
+    - name: Download current Amazon ECS task definition
+      run: |
+        TASK_DEFINITION_ARN="$(aws ecs describe-services \
+          --cluster "$ECS_CLUSTER" \
+          --services "$ECS_SERVICE" \
+          --query 'services[0].taskDefinition' \
+          --output text)"
+
+        test "$TASK_DEFINITION_ARN" != "None"
+
+        aws ecs describe-task-definition \
+          --task-definition "$TASK_DEFINITION_ARN" \
+          --query taskDefinition \
+          --output json |
+          jq 'del(
+            .taskDefinitionArn,
+            .revision,
+            .status,
+            .requiresAttributes,
+            .compatibilities,
+            .registeredAt,
+            .registeredBy
+          )' > task-definition.json
+
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition-family: ${{ env.ECS_TASK_DEFINITION_FAMILY_NAME }}
+        task-definition: task-definition.json
         container-name: ${{ env.CONTAINER_NAME }}
         image: ${{ steps.build-image.outputs.image }}
-        environment-variables: |
-          DB_HOST=${{ vars.DB_HOST }}
-          DB_PORT=${{ vars.DB_PORT }}
-          DB_NAME=${{ vars.DB_NAME }}
-          SPRING_DATASOURCE_USERNAME=${{ vars.DB_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
@@ -80,4 +102,26 @@ jobs:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true
+        wait-for-service-stability: false
+
+    - name: Start ECS service after bootstrap
+      run: |
+        DESIRED_COUNT="$(aws ecs describe-services \
+          --cluster "$ECS_CLUSTER" \
+          --services "$ECS_SERVICE" \
+          --query 'services[0].desiredCount' \
+          --output text)"
+
+        if [ "$DESIRED_COUNT" = "0" ]; then
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE" \
+            --desired-count 1 \
+            --no-cli-pager
+        fi
+
+    - name: Wait for ECS service stability
+      run: |
+        aws ecs wait services-stable \
+          --cluster "$ECS_CLUSTER" \
+          --services "$ECS_SERVICE"

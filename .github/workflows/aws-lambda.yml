@@ -31,10 +31,24 @@ jobs:
         role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE }}
         aws-region: ${{ env.AWS_REGION }}
 
-    - name: Deploy Lambda Function
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.14'
+        cache: pip
+        cache-dependency-path: lambda/discord-notifier/requirements.txt
+
+    - name: Build Lambda package
+      run: |
+        mkdir -p build/lambda
+        python -m pip install \
+          --requirement lambda/discord-notifier/requirements.txt \
+          --target build/lambda
+        cp lambda/discord-notifier/lambda_function.py build/lambda/
+
+    - name: Deploy Lambda function
       uses: aws-actions/aws-lambda-deploy@v1.1.2
       with:
         function-name: discord-notifier
-        code-artifacts-dir: lambda/discord-notifier
+        code-artifacts-dir: build/lambda
         handler: lambda_function.lambda_handler
         runtime: python3.14

@@ -2,7 +2,7 @@
 data "archive_file" "example" {
   type        = "zip"
   source_file = "${path.module}/../lambda/discord-notifier/lambda_function.py"
-  output_path = "${path.module}/../lambda/layer/function.zip"
+  output_path = "${path.module}/../lambda/function.zip"
 }
 
 resource "aws_lambda_function" "discord" {
@@ -46,18 +46,9 @@ resource "aws_iam_role" "lambda" {
 }
 
 # Enable lambda to get secrets
-resource "aws_iam_role_policy" "lambda_get_secret" {
-  name = "lambda-get-secret"
-  role = aws_iam_role.lambda.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = "secretsmanager:GetSecretValue"
-      Resource = aws_secretsmanager_secret.app.arn
-    }]
-  })
+resource "aws_iam_role_policy_attachment" "lambda_get_secret" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = aws_iam_policy.get_secret.arn
 }
 
 # Attach CloudWatch log policy to lambda role

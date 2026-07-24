@@ -20,7 +20,7 @@ Give credentials to docker for it to push to ECR.
 - Subnet must have inbound rule accepting the port that application listen to.
 - Container and Host port matching.
 
-6. Resource cleanup
+6. Manual Resource cleanup
 Since ECS create 2 CloudFormation stack, delete the stack after finish using and check if unwanted service are running:
 - ECS Fargate
     - Task running?
@@ -28,6 +28,7 @@ Since ECS create 2 CloudFormation stack, delete the stack after finish using and
 - Load balancer
     - Charged even on Idle
 - NAT gateway
+* Resolved by managing infrastructure with terraform destroy
 
 7. Bootstrap image issue
 If terraform manage ecs and task, the service try to create task that dont have image yet. CI/CD is still building the image
@@ -48,3 +49,5 @@ If terraform manage ecs and task, the service try to create task that dont have 
 Create s3 bucket with local backend, then use another folder for Infra Terraform using the created s3 bucket. Migrate state if needed.
 
 15. Failing terraform plan or apply might keep the lock on. terraform refresh to confirm and Force unlock.
+
+16. The ECS service and aws_ecs_cluster_capacity_providers both depend only on the cluster. Terraform can create them concurrently. The service should explicitly depend on the capacity-provider association when using FARGATE_SPOT.

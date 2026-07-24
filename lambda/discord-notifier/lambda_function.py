@@ -1,4 +1,5 @@
 import os
+import json
 
 from discord_webhook import DiscordEmbed, DiscordWebhook
 from aws_lambda_powertools.utilities.parameters import get_secret
@@ -19,9 +20,19 @@ def lambda_handler(event, context):
     webhook = DiscordWebhook(url=secret_json["discord-webhook-url"])
     sns_message = records[0]["Sns"]["Message"]
 
+    payload = json.loads(sns_message)
+
+    discord_message = (
+    f"Alarm Name: {payload['AlarmName']}\n"
+    f"Alarm Description: {payload['AlarmDescription']}\n"
+    f"State: {payload['NewStateValue']}\n"
+    f"Reason: {payload['NewStateReason']}\n"
+    f"Timestamp: {payload['StateChangeTime']}"
+    )
+    
     embed = DiscordEmbed(
         title="Expense Tracker Alarm",
-        description=sns_message,
+        description=discord_message,
         color="03b2f8",
     )
     webhook.add_embed(embed)
